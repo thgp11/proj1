@@ -3,29 +3,23 @@ package com.hospital.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Entity
-@Table(name = "reservations")
+@Table(name = "notifications")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Reservation {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    private LocalDate date;
-    private String status;
+    private String message;
+    private Boolean read;
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
 }
