@@ -1,4 +1,5 @@
 package com.hospital.dto;
 
-public record MemberDTO() {
+public class MemberDTO {
+
 }
