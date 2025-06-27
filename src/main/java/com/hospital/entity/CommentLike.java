@@ -6,7 +6,7 @@ import lombok.Builder;
 @Entity
 @Table(name= "comment_likes",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"comment_id", "comment_user_id"})
+                @UniqueConstraint(columnNames = {"comment_id", "comment_member_id"})
         })
 @Builder
 public class CommentLike {

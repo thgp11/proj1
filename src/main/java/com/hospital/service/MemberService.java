@@ -3,7 +3,6 @@ package com.hospital.service;
 import com.hospital.dto.SignupRequestDTO;
 import com.hospital.entity.Member;
 import com.hospital.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
