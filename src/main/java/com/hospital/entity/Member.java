@@ -28,6 +28,9 @@ public class Member {
     @NotNull
     private String name;
 
+    @NotNull
+    private String role = "USER";
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -51,13 +54,13 @@ public class Member {
     private List<CommentLike> commentLike;
 
     @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

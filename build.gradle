@@ -41,6 +41,12 @@ dependencies {
 
 	// 비밀번호 암호화
 	implementation 'org.springframework.security:spring-security-crypto'
+
+	// oauth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	//api 명세
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 }
 
 tasks.named('test') {

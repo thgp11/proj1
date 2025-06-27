@@ -16,6 +16,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
+    @Column(nullable = false, unique = true)
     private String name; // 카테고리 명
+
+    private Long ownerId;
 
 }
