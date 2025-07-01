@@ -8,6 +8,8 @@ import com.hospital.repository.CategoryRepository;
 import com.hospital.repository.MemberRepository;
 import com.hospital.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -21,8 +23,12 @@ public class PostRequestService {
 
     public String CreatePost(PostRequestDTO dto) {
         // 1. 글 작성자의 회원 여부 확인
-        Member member = memberRepository.findById(dto.getMemberId())
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("글 작성은 회원만 가능합니다."));
+
         // 2. 카테고리 조회
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new NoSuchElementException("카테고리를 선택해주세요."));

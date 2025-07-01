@@ -28,8 +28,9 @@ public class Member {
     @NotNull
     private String name;
 
-    @NotNull
-    private String role = "USER";
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberRole role = MemberRole.USER;
 
     private LocalDateTime createdAt;
 

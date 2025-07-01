@@ -13,6 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDTO {
+
+
+
     @NotNull(message = "비회원은 글을 작성할 수 없습니다.")
     private Long memberId;
     @NotNull(message = "카테고리를 설정해주세요.")

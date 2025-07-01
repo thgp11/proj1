@@ -1,14 +1,13 @@
 package com.hospital.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.hospital.entity.MemberRole;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class SignupRequestDTO{
     private String id;
     private String password;
@@ -16,6 +15,6 @@ public class SignupRequestDTO{
     private String name;
 //    String phoneNumber,
 //    String address,
-//    String role // e.g., "patient", "doctor", "admin"
-
+    // role은 일반 회원가입에서는 숨김처리하고 관리자용 api에서만 받아야함
+    private MemberRole role;
 }

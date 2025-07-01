@@ -16,18 +16,21 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    //카테고리 추가
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Category> create(@RequestParam String name){
+    public ResponseEntity<Category> create(@RequestBody String name){
         return ResponseEntity.ok(categoryService.createCategory(name));
     }
 
+    //카테고리 수정
     @PreAuthorize("hasRole('ADMIN') or (@categoryService.isMemberAllowedToModify(authentication.principal.id, #categoryId))")
     @PutMapping("/{id}")
     public ResponseEntity<Category> update(@PathVariable Long id, @RequestParam String name){
         return ResponseEntity.ok(categoryService.updateCategory(id, name));
     }
 
+    //카테고리 삭제
     @PreAuthorize("hasRole('ADMIN') or (@categoryService.isMemberAllowedToModify(authentication.principal.id, #categoryId))")
     @DeleteMapping("/{id}")
     public ResponseEntity<Category> delete(@PathVariable Long id){
@@ -35,6 +38,7 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    //전체 카테고리 조회
     @GetMapping
     public ResponseEntity<List<Category>> getALL(){
         return ResponseEntity.ok(categoryService.getAllCategories());
