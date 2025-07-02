@@ -24,6 +24,8 @@ public class PostRequestService {
     public String CreatePost(PostRequestDTO dto) {
         // 1. 글 작성자의 회원 여부 확인
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("로그인 사용자: " + auth.getName());
+        System.out.println("권한 목록: " + auth.getAuthorities());
         String email = auth.getName();
 
         Member member = memberRepository.findByEmail(email)

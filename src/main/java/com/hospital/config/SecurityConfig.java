@@ -1,5 +1,7 @@
 package com.hospital.config;
 
+import com.hospital.security.JwtFilter;
+import com.hospital.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,9 +10,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -18,25 +23,36 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    public JwtFilter jwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+        return new JwtFilter(jwtUtil, userDetailsService);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable()) // CSRF 보안 비활성화
+                .cors(Customizer.withDefaults()) // CORS 허용
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll() // 로그인, 회원가입 모두 허용
+                        .requestMatchers("/api/categories/**").hasRole("ADMIN") // 카테고리 운영자 허용
+                        .anyRequest().authenticated() // 그 외는 인증 필요
+                )
+
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // CSRF 보안 비활성화 (개발 중엔 꺼도 됨)
-                .cors(Customizer.withDefaults()) // CORS 허용
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/api/**").permitAll() // API 모두 허용
-                        .anyRequest().authenticated() // 그 외는 인증 필요
-                );
-
-        return http.build();
     }
 }

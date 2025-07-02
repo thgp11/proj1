@@ -1,5 +1,6 @@
 package com.hospital.controller;
 
+import com.hospital.dto.CategoryDTO;
 import com.hospital.entity.Category;
 import com.hospital.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ public class CategoryController {
     //카테고리 추가
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Category> create(@RequestBody String name){
-        return ResponseEntity.ok(categoryService.createCategory(name));
+    public ResponseEntity<Category> create(@RequestBody CategoryDTO dto){
+        return ResponseEntity.ok(categoryService.createCategory(dto.getName()));
     }
 
     //카테고리 수정
