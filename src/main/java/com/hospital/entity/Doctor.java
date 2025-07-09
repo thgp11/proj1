@@ -20,6 +20,7 @@ public class Doctor {
 
     private String name;
     private String department;
+    private String doctorNumber;
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;

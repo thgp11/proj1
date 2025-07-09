@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservations")
@@ -28,4 +29,11 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+
+    @ManyToOne
+    private  TimeSlot timeSlot;
+
+    private String symptoms;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
