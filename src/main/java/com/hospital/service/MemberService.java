@@ -4,6 +4,7 @@ import com.hospital.dto.SignupRequestDTO;
 import com.hospital.entity.Member;
 import com.hospital.entity.MemberRole;
 import com.hospital.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,18 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
     @Transactional
     public void signup(SignupRequestDTO request) {
+        System.out.println("SignupRequestDTO: " + request);
+        if (request.getEmail() == null || request.getPassword() == null || request.getName() == null) {
+            throw new IllegalArgumentException("이메일, 비밀번호, 이름은 필수 입력값입니다.");
+        }
         if (memberRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 등록된 이메일입니다.");
         }
@@ -33,6 +34,8 @@ public class MemberService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
+                .phoneNumber(request.getPhoneNumber())
+                .address(request.getAddress())
                 .role(MemberRole.USER)
                 .build();
 
@@ -44,9 +47,15 @@ public class MemberService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
+                .phoneNumber(request.getPhoneNumber())
+                .address(request.getAddress())
                 .role(MemberRole.ADMIN)
                 .build();
 
         memberRepository.save(member);
+    }
+
+    public boolean existsByEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 }

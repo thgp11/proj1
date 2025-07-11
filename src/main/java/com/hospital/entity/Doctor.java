@@ -19,6 +19,14 @@ public class Doctor {
     private Long Id;
 
     private String name;
+
+    @Column(unique = true)
+    private String email;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false, unique = true)
+    private Member member;
+
     private String department;
     private String doctorNumber;
 

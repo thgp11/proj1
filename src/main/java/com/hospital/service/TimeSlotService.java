@@ -1,13 +1,17 @@
 package com.hospital.service;
 
+import com.hospital.dto.ReservationRequestDTO;
 import com.hospital.dto.WeeklyRecurringTimeSlotRequestDTO;
 import com.hospital.entity.Doctor;
 import com.hospital.entity.HolidayType;
+import com.hospital.entity.Member;
 import com.hospital.entity.TimeSlot;
 import com.hospital.repository.DoctorRepository;
 import com.hospital.repository.HolidayRepository;
+import com.hospital.repository.MemberRepository;
 import com.hospital.repository.TimeSlotRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +26,7 @@ public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
     private final DoctorRepository doctorRepository;
+    private final MemberRepository memberRepository;
     private final HolidayRepository holidayRepository;
 
     // 반복 진료 시간 슬롯 생성
@@ -79,7 +84,7 @@ public class TimeSlotService {
         return isDoctorSpecificHoliday || isNationalHoliday;
     }
 
-     // 의사의 예약 가능한 시간 슬롯 조회 (휴무일 제외)
+    // 의사의 예약 가능한 시간 슬롯 조회 (휴무일 제외)
     public List<TimeSlot> getAvailableSlots(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new NoSuchElementException("의사를 찾을 수 없습니다."));
@@ -93,10 +98,30 @@ public class TimeSlotService {
                 .collect(Collectors.toList());
     }
 
-     // 예약 가능 시간 검증
+    // 예약 가능 시간 검증
     public void validateBookingTime(TimeSlot slot) {
         if (LocalDateTime.now().isAfter(slot.getStartTime())) {
             throw new IllegalArgumentException("지나간 시간에는 예약할 수 없습니다.");
         }
+    }
+
+    // 헬퍼 메서드 생성
+    private <T, ID> T findByIdOrThrow(JpaRepository<T, ID> repository, ID id, String errorMessage) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(errorMessage));
+    }
+
+    public void someReservationMethod(Long memberId, ReservationRequestDTO dto){
+        // 예약 생성 로직
+        // 1. 의사가 존재하는지 확인
+        Doctor doctor = findByIdOrThrow(doctorRepository, dto.getDoctorId(), "의사 정보가 존재하지 않습니다.");
+        // 2. 시간 슬롯이 유효한지 확인
+        TimeSlot timeSlot = findByIdOrThrow(timeSlotRepository, dto.getTimeSlotId(), "예약을 찾을 수 없습니다.");
+        validateBookingTime(timeSlot);
+
+        // 3. 예약 생성 및 저장
+        // 4. 예약된 시간 슬롯을 사용 불가능으로 설정
+
+        // 예시 코드 (구현 필요)
     }
 }

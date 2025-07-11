@@ -29,6 +29,12 @@ public class Member {
     @NotNull
     private String name;
 
+    @NotNull
+    public String address;
+
+    @NotNull
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role = MemberRole.USER;
@@ -37,23 +43,23 @@ public class Member {
 
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "member")
-    private List<Post> post;
-
-    @OneToMany(mappedBy = "member")
-    private List<Comment> comment;
+//    @OneToMany(mappedBy = "member")
+//    private List<Post> post;
+//
+//    @OneToMany(mappedBy = "member")
+//    private List<Comment> comment;
 
     @OneToMany(mappedBy = "member")
     private List<Reservation> reservation;
 
-    @OneToMany(mappedBy = "member")
-    private List<Notification> notification;
+//    @OneToMany(mappedBy = "member")
+//    private List<Notification> notification;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostLike> postLike;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentLike> commentLike;
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PostLike> postLike;
+//
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<CommentLike> commentLike;
 
     @PrePersist
     public void onCreate() {
@@ -65,4 +71,6 @@ public class Member {
     public void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+
 }

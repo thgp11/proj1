@@ -13,8 +13,8 @@ public class SignupRequestDTO{
     private String password;
     private String email;
     private String name;
-//    String phoneNumber,
-//    String address,
+    private String phoneNumber;
+    private String address;
     // role은 일반 회원가입에서는 숨김처리하고 관리자용 api에서만 받아야함
     private MemberRole role;
 }

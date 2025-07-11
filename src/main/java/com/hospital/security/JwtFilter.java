@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +72,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         Object rolesObject = claims.get("roles");
         List<String> roles;
-        
+
         if (rolesObject instanceof  List<?>) {
             roles = ((List<?>) rolesObject).stream()
                     .map(Object::toString)
