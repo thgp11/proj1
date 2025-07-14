@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/signup").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/**").hasAnyRole("ADMIN", "DOCTOR")
                         .requestMatchers("/api/reservations/**").hasAnyRole("ADMIN", "DOCTOR") // 예약 관련 API는 관리자 또는 의사만 접근 가능

@@ -58,4 +58,8 @@ public class MemberService {
     public boolean existsByEmail(String email) {
         return memberRepository.existsByEmail(email);
     }
+
+    public boolean isAdminExists() {
+        return memberRepository.existsByRole(MemberRole.ADMIN);
+    }
 }

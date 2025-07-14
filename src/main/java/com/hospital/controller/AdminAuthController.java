@@ -4,14 +4,15 @@ import com.hospital.dto.DoctorRequestDTO;
 import com.hospital.dto.SignupRequestDTO;
 import com.hospital.entity.DoctorRequest;
 import com.hospital.entity.MemberRole;
-import com.hospital.repository.DoctorRepository;
 import com.hospital.repository.DoctorRequestRepository;
-import com.hospital.repository.MemberRepository;
 import com.hospital.service.AdminService;
 import com.hospital.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,14 +24,21 @@ public class AdminAuthController {
 
     private final MemberService memberService;
     private final DoctorRequestRepository doctorRequestRepository;
-    private final MemberRepository memberRepository;
-    private final DoctorRepository doctorRepository;
     private final AdminService adminService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> adminSignup(@RequestBody SignupRequestDTO request){
+    public ResponseEntity<?> adminSignup(@RequestBody SignupRequestDTO request, Authentication auth) {
         if(request.getRole() != MemberRole.ADMIN) {
             return ResponseEntity.badRequest().body("관리자 권한으로만 가입 가능");
+        }
+
+        boolean adminExists = memberService.isAdminExists();
+
+        if(adminExists) {
+            if(auth == null || !auth.getAuthorities().stream()
+                    .anyMatch((GrantedAuthority grantedAuth) -> grantedAuth.getAuthority().equals("ROLE_ADMIN"))) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 존재하는 관리자 계정입니다.");
+            }
         }
 
         memberService.signupAdmin(request);
