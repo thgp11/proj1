@@ -4,13 +4,12 @@ import com.hospital.dto.ReservationRequestDTO;
 import com.hospital.dto.WeeklyRecurringTimeSlotRequestDTO;
 import com.hospital.entity.Doctor;
 import com.hospital.entity.HolidayType;
-import com.hospital.entity.Member;
 import com.hospital.entity.TimeSlot;
 import com.hospital.repository.DoctorRepository;
 import com.hospital.repository.HolidayRepository;
-import com.hospital.repository.MemberRepository;
 import com.hospital.repository.TimeSlotRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +19,13 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
     private final DoctorRepository doctorRepository;
-    private final MemberRepository memberRepository;
     private final HolidayRepository holidayRepository;
 
     // 반복 진료 시간 슬롯 생성
@@ -51,6 +50,8 @@ public class TimeSlotService {
                 currentDate = currentDate.plusDays(1);
                 continue;
             }
+
+            log.debug("Creating TimeSlot for date: {}", currentDate);
 
             LocalTime currentTime = dto.getStartTime();
             while (currentTime.plusMinutes(dto.getDurationInMinutes()).isBefore(dto.getEndTime().plusSeconds(1))) {

@@ -1,5 +1,6 @@
 package com.hospital.controller;
 
+import com.hospital.dto.TimeSlotResponseDTO;
 import com.hospital.dto.WeeklyRecurringTimeSlotRequestDTO;
 import com.hospital.entity.TimeSlot;
 import com.hospital.service.TimeSlotService;
@@ -22,8 +23,11 @@ public class TimeSlotController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
     @PostMapping("/create")
-    public ResponseEntity<List<TimeSlot>> registerWeeklySlots(@RequestBody WeeklyRecurringTimeSlotRequestDTO dto) {
+    public ResponseEntity<List<TimeSlotResponseDTO>> registerWeeklySlots(@RequestBody WeeklyRecurringTimeSlotRequestDTO dto) {
         List<TimeSlot> slots = timeSlotService.generateWeeklyRecurringSlots(dto);
-        return ResponseEntity.ok(slots);
+        List<TimeSlotResponseDTO> response = slots.stream()
+                .map(TimeSlotResponseDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 }

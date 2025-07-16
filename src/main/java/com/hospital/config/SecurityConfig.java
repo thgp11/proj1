@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/signup").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/**").hasAnyRole("ADMIN", "DOCTOR")
-                        .requestMatchers("/api/reservations/**").hasAnyRole("ADMIN", "DOCTOR") // 예약 관련 API는 관리자 또는 의사만 접근 가능
+                        .requestMatchers("/api/reservations/**").permitAll() // 예약 관련 API는 관리자 또는 의사만 접근 가능
                         .requestMatchers("/auth/**").permitAll() // 로그인, 회원가입 모두 허용
                         .requestMatchers("/api/categories/**").hasRole("ADMIN") // 카테고리 운영자 허용
                         .anyRequest().authenticated() // 그 외는 인증 필요

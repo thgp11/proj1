@@ -24,7 +24,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final TimeSlotRepository timeSlotRepository;
 
-    public Reservation createReservation(String email, ReservationRequestDTO dto) {
+    public Reservation create(ReservationRequestDTO dto, String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("회원이 존재하지 않습니다."));
 
@@ -49,6 +49,7 @@ public class ReservationService {
                 .doctor(doctor)
                 .timeSlot(timeSlot)
                 .date(LocalDate.now())
+                .time(timeSlot.getStartTime().toLocalTime())
                 .status(dto.getStatus())
                 .symptoms(dto.getSymptoms())
                 .createdAt(LocalDateTime.now())

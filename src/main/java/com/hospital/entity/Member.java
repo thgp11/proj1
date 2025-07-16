@@ -1,5 +1,6 @@
 package com.hospital.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -50,6 +51,7 @@ public class Member {
 //    private List<Comment> comment;
 
     @OneToMany(mappedBy = "member")
+    @JsonManagedReference
     private List<Reservation> reservation;
 
 //    @OneToMany(mappedBy = "member")

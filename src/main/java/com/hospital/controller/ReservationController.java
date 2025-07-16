@@ -1,6 +1,7 @@
 package com.hospital.controller;
 
 import com.hospital.dto.ReservationRequestDTO;
+import com.hospital.dto.ReservationResponseDTO;
 import com.hospital.entity.Reservation;
 import com.hospital.repository.MemberRepository;
 import com.hospital.service.ReservationService;
@@ -18,21 +19,38 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final MemberRepository memberRepository;
 
+    private ReservationResponseDTO convertToDTO(Reservation reservation) {
+        return ReservationResponseDTO.builder()
+                .id(reservation.getId())
+                .date(reservation.getDate())
+                .time(reservation.getTimeSlot().getStartTime().toLocalTime())
+                .status(reservation.getStatus().name()) // Enum → String
+                .symptoms(reservation.getSymptoms())
+                .memberName(reservation.getMember().getName())
+                .doctorName(reservation.getDoctor().getName())
+                .build();
+    }
+
     // 예약 생성
     @PostMapping("/create")
-    public ResponseEntity<Reservation> create(@RequestBody ReservationRequestDTO dto, Authentication authentication){
-        String email = authentication.getName(); // 인증된 사용자 email
-        Reservation reservation = reservationService.createReservation(email, dto);
-        return ResponseEntity.ok(reservation);
+    public ResponseEntity<ReservationResponseDTO> create(@RequestBody ReservationRequestDTO dto, Authentication auth){
+        Reservation reservation = reservationService.create(dto, auth.getName());
+
+        ReservationResponseDTO responseDTO = convertToDTO(reservation);
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     // 예약 조회(환자용)
     @GetMapping("/my")
-    public ResponseEntity<List<Reservation>> getMyReservations(Authentication auth){
+    public ResponseEntity<List<ReservationResponseDTO>> getMyReservations(Authentication auth){
         String email = auth.getName();
         List<Reservation> reservations = reservationService.getReservationsByMemberEmail(email);
+        List<ReservationResponseDTO> dtoList = reservations.stream()
+                .map(this::convertToDTO)
+                .toList();
 
-        return ResponseEntity.ok(reservations);
+        return ResponseEntity.ok(dtoList);
     }
 
     // 예약 조회(의사용)
