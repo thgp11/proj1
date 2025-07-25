@@ -17,7 +17,7 @@ public class Notification {
     private Long Id;
 
     private String message;
-    private Boolean read;
+    private Boolean isRead;
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)

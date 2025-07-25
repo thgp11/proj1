@@ -40,55 +40,64 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = extractToken(request);
-            if (token != null && jwtUtil.validateToken(token)) {
-                String email = jwtUtil.extractEmail(token);
-                authenticateUser(email, token);
-                logger.info("인증 성공 : {}", email);
-            } else if (token != null) {
-                logger.warn("유효하지 않은 JWT 토큰");
+            if (token != null) {
+                // 블랙리스트 확인
+                if (jwtUtil.isBlacklisted(token)) {
+                    logger.warn("블랙리스트에 등록된 JWT 토큰");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Token is blacklisted");
+                    return;
+                }
+                // JWT 유효성 검사
+                if (jwtUtil.validateToken(token)) {
+                    String email = jwtUtil.extractEmail(token);
+                    authenticateUser(email, token);
+                    logger.info("인증 성공 : {}", email);
+                } else {
+                    logger.warn("유효하지 않은 JWT 토큰");
+                }
             }
-        } catch (Exception e) {
-            logger.error("JWT 처리 중 예외 발생 : ", e);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid or expired JWT token");
-            return;
+            } catch(Exception e){
+                logger.error("JWT 처리 중 예외 발생 : ", e);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid or expired JWT token");
+                return;
+            }
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
-    }
 
-    private String extractToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
+        private String extractToken (HttpServletRequest request){
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                return authHeader.substring(7);
+            }
+            return null;
         }
-        return null;
-    }
 
-    @SuppressWarnings("unchecked")
-    private void authenticateUser(String email, String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        private void authenticateUser (String email, String token){
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-        Claims claims = jwtUtil.parseClaims(token);
+            Claims claims = jwtUtil.parseClaims(token);
 
-        Object rolesObject = claims.get("roles");
-        List<String> roles;
+            Object rolesObject = claims.get("roles");
+            List<String> roles;
 
-        if (rolesObject instanceof  List<?>) {
-            roles = ((List<?>) rolesObject).stream()
-                    .map(Object::toString)
+            if (rolesObject instanceof List<?>) {
+                roles = ((List<?>) rolesObject).stream()
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
+            } else {
+                roles = List.of(); // 빈리스트로 초기화
+            }
+
+            List<GrantedAuthority> authorities = roles.stream()
+                    .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-        }else {
-            roles = List.of(); // 빈리스트로 초기화
+
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails, null, authorities);
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
-
-        List<GrantedAuthority> authorities = roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails, null, authorities);
-
-        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
-}
